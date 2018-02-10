@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tian.order.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.tian.order.pojo.Order">
+        <id column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="order_name" property="orderName" jdbcType="VARCHAR"/>
+        <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="createtime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="money" property="money" jdbcType="BIGINT"/>
+        <result column="order_type" property="orderType" jdbcType="BIGINT"/>
+        <result column="order_desc" property="orderDesc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into tb_order (order_id, order_name, updatetime,
+        user_id, createtime, money,
+        order_type, order_desc) values
+        <foreach collection="list" index="index" item="order" open="" close="" separator=",">
+            (#{order.orderId,jdbcType=BIGINT}, #{order.orderName,jdbcType=VARCHAR}, #{order.updatetime,jdbcType=TIMESTAMP},
+            #{order.userId,jdbcType=BIGINT}, #{order.createtime,jdbcType=TIMESTAMP}, #{order.money,jdbcType=BIGINT},
+            #{order.orderType,jdbcType=BIGINT}, #{order.orderDesc,jdbcType=VARCHAR})
+        </foreach>
+
+       <!-- insert into user (name, age,dept_code) values
+        <foreach collection="list" index="index" item="item" open="" close="" separator=",">
+            (#{item.name,jdbcType=VARCHAR},
+            #{item.age,jdbcType=INTEGER},
+            #{item.deptCode,jdbcType=VARCHAR}
+            )
+        </foreach>-->
+    </insert>
+
+
+
+    <select id="getOrders" resultMap="BaseResultMap" parameterType="long">
+        SELECT
+        *
+        FROM
+        tb_order o
+        <where>
+            <if test="userId != null and userId !='' ">
+                o.user_id = #{userId}
+            </if>
+            <if test="orderType!=null and orderType!=''">
+               AND o.order_type = ${orderType}
+            </if>
+        </where>
+            ORDER BY
+            updatetime DESC
+    </select>
+
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        <if test="fields == null">
+            order_id, order_name, updatetime, user_id, createtime, money, order_type, order_desc
+        </if>
+        <if test="fields != null">
+            ${fields}
+        </if>
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.tian.order.pojo.OrderExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from tb_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause} DESC
+        </if>
+        <if test="startRow != null">
+            limit #{startRow} , #{pageSize}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        order_id,order_name,updatetime,user_id,createtime,money,order_type,order_desc
+        from tb_order
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from tb_order
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </delete>
+    <delete id="deleteByExample" parameterType="com.tian.order.pojo.OrderExample">
+        delete from tb_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.tian.order.pojo.Order">
+        insert into tb_order (order_id, order_name, updatetime,
+        user_id, createtime, money,
+        order_type, order_desc)
+        values (#{orderId,jdbcType=BIGINT}, #{orderName,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP},
+        #{userId,jdbcType=BIGINT}, #{createtime,jdbcType=TIMESTAMP}, #{money,jdbcType=BIGINT},
+        #{orderType,jdbcType=BIGINT}, #{orderDesc,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.tian.order.pojo.Order">
+        insert into tb_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="orderName != null">
+                order_name,
+            </if>
+            <if test="updatetime != null">
+                updatetime,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="createtime != null">
+                createtime,
+            </if>
+            <if test="money != null">
+                money,
+            </if>
+            <if test="orderType != null">
+                order_type,
+            </if>
+            <if test="orderDesc != null">
+                order_desc,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="orderName != null">
+                #{orderName,jdbcType=VARCHAR},
+            </if>
+            <if test="updatetime != null">
+                #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="createtime != null">
+                #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="money != null">
+                #{money,jdbcType=BIGINT},
+            </if>
+            <if test="orderType != null">
+                #{orderType,jdbcType=BIGINT},
+            </if>
+            <if test="orderDesc != null">
+                #{orderDesc,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.tian.order.pojo.OrderExample" resultType="java.lang.Integer">
+        select count(*) from tb_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update tb_order
+        <set>
+            <if test="record.orderId != null">
+                order_id = #{record.orderId,jdbcType=BIGINT},
+            </if>
+            <if test="record.orderName != null">
+                order_name = #{record.orderName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.updatetime != null">
+                updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.userId != null">
+                user_id = #{record.userId,jdbcType=BIGINT},
+            </if>
+            <if test="record.createtime != null">
+                createtime = #{record.createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="record.money != null">
+                money = #{record.money,jdbcType=BIGINT},
+            </if>
+            <if test="record.orderType != null">
+                order_type = #{record.orderType,jdbcType=BIGINT},
+            </if>
+            <if test="record.orderDesc != null">
+                order_desc = #{record.orderDesc,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update tb_order
+        set order_id = #{record.orderId,jdbcType=BIGINT},
+        order_name = #{record.orderName,jdbcType=VARCHAR},
+        updatetime = #{record.updatetime,jdbcType=TIMESTAMP},
+        user_id = #{record.userId,jdbcType=BIGINT},
+        createtime = #{record.createtime,jdbcType=TIMESTAMP},
+        money = #{record.money,jdbcType=BIGINT},
+        order_type = #{record.orderType,jdbcType=BIGINT},
+        order_desc = #{record.orderDesc,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.tian.order.pojo.Order">
+        update tb_order
+        <set>
+            <if test="orderName != null">
+                order_name = #{orderName,jdbcType=VARCHAR},
+            </if>
+            <if test="updatetime != null">
+                updatetime = #{updatetime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="createtime != null">
+                createtime = #{createtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="money != null">
+                money = #{money,jdbcType=BIGINT},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=BIGINT},
+            </if>
+            <if test="orderDesc != null">
+                order_desc = #{orderDesc,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.tian.order.pojo.Order">
+        update tb_order
+        set order_name = #{orderName,jdbcType=VARCHAR},
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+        user_id = #{userId,jdbcType=BIGINT},
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+        money = #{money,jdbcType=BIGINT},
+        order_type = #{orderType,jdbcType=BIGINT},
+        order_desc = #{orderDesc,jdbcType=VARCHAR}
+        where order_id = #{orderId,jdbcType=BIGINT}
+    </update>
+</mapper>

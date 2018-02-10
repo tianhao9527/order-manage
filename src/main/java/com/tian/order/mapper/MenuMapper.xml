@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tian.order.mapper.MenuMapper">
+    <resultMap id="BaseResultMap" type="com.tian.order.pojo.Menu">
+        <id column="menu_id" property="menuId" jdbcType="BIGINT"/>
+        <result column="menu_name" property="menuName" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="menu_url" property="menuUrl" jdbcType="VARCHAR"/>
+        <result column="menu_type" property="menuType" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getMenus" resultMap="BaseResultMap" parameterType="int">
+        SELECT
+        *
+        FROM
+        tb_menu
+        <where>
+            parent_id = 0
+            <if test="_parameter != null and _parameter !='' ">
+                AND menu_type = #{menu_type}
+            </if>
+        </where>
+    </select>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" suffix=")" prefixOverrides="and">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach collection="criterion.value" item="listItem" open="(" close=")"
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+    <sql id="Base_Column_List">
+        <if test="fields == null">
+            menu_id, menu_name, parent_id, menu_url, menu_type
+        </if>
+        <if test="fields != null">
+            ${fields}
+        </if>
+    </sql>
+    <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.tian.order.pojo.MenuExample">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from tb_menu
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="startRow != null">
+            limit #{startRow} , #{pageSize}
+        </if>
+    </select>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select 
+    menu_id,menu_name,parent_id,menu_url,menu_type
+    from tb_menu
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from tb_menu
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="com.tian.order.pojo.MenuExample">
+        delete from tb_menu
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </delete>
+    <insert id="insert" parameterType="com.tian.order.pojo.Menu">
+    insert into tb_menu (menu_id, menu_name, parent_id, 
+      menu_url, menu_type)
+    values (#{menuId,jdbcType=BIGINT}, #{menuName,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, 
+      #{menuUrl,jdbcType=VARCHAR}, #{menuType,jdbcType=INTEGER})
+  </insert>
+    <insert id="insertSelective" parameterType="com.tian.order.pojo.Menu">
+        insert into tb_menu
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="menuId != null">
+                menu_id,
+            </if>
+            <if test="menuName != null">
+                menu_name,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="menuUrl != null">
+                menu_url,
+            </if>
+            <if test="menuType != null">
+                menu_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="menuId != null">
+                #{menuId,jdbcType=BIGINT},
+            </if>
+            <if test="menuName != null">
+                #{menuName,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="menuUrl != null">
+                #{menuUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="menuType != null">
+                #{menuType,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="com.tian.order.pojo.MenuExample" resultType="java.lang.Integer">
+        select count(*) from tb_menu
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
+        update tb_menu
+        <set>
+            <if test="record.menuId != null">
+                menu_id = #{record.menuId,jdbcType=BIGINT},
+            </if>
+            <if test="record.menuName != null">
+                menu_name = #{record.menuName,jdbcType=VARCHAR},
+            </if>
+            <if test="record.parentId != null">
+                parent_id = #{record.parentId,jdbcType=BIGINT},
+            </if>
+            <if test="record.menuUrl != null">
+                menu_url = #{record.menuUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="record.menuType != null">
+                menu_type = #{record.menuType,jdbcType=INTEGER},
+            </if>
+        </set>
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="map">
+        update tb_menu
+        set menu_id = #{record.menuId,jdbcType=BIGINT},
+        menu_name = #{record.menuName,jdbcType=VARCHAR},
+        parent_id = #{record.parentId,jdbcType=BIGINT},
+        menu_url = #{record.menuUrl,jdbcType=VARCHAR},
+        menu_type = #{record.menuType,jdbcType=INTEGER}
+        <if test="_parameter != null">
+            <include refid="Update_By_Example_Where_Clause"/>
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.tian.order.pojo.Menu">
+        update tb_menu
+        <set>
+            <if test="menuName != null">
+                menu_name = #{menuName,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="menuUrl != null">
+                menu_url = #{menuUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="menuType != null">
+                menu_type = #{menuType,jdbcType=INTEGER},
+            </if>
+        </set>
+        where menu_id = #{menuId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.tian.order.pojo.Menu">
+    update tb_menu
+    set menu_name = #{menuName,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      menu_url = #{menuUrl,jdbcType=VARCHAR},
+      menu_type = #{menuType,jdbcType=INTEGER}
+    where menu_id = #{menuId,jdbcType=BIGINT}
+  </update>
+</mapper>
